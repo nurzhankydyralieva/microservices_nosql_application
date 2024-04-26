@@ -4,7 +4,7 @@ import com.epam.xstack.model.dto.TrainerDTO;
 import com.epam.xstack.model.dto.TrainingDTO;
 
 public interface TrainingService {
-    void addTrainer(TrainerDTO trainerDTO);
+    TrainerDTO addTrainer(TrainerDTO trainerDTO);
 
     void updateOrSaveTrainingData(TrainingDTO trainingDTO);
 

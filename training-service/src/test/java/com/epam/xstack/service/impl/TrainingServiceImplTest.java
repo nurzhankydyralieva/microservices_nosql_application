@@ -1,7 +1,10 @@
 package com.epam.xstack.service.impl;
 
-import com.epam.xstack.model.dto.TrainerResponseDTO;
+import com.epam.xstack.mapper.TrainerMapper;
+import com.epam.xstack.model.dto.TrainerDTO;
+import com.epam.xstack.model.entity.Trainer;
 import com.epam.xstack.repository.TrainerRepository;
+import com.epam.xstack.service.TrainingService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +20,22 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
-public class TrainerServiceImplTest {
+public class TrainingServiceImplTest {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private TrainerMapper trainerMapper;
+    @Autowired
+    private TrainingService trainingService;
     @Autowired
     private TrainerRepository trainerRepository;
     @Container
@@ -40,22 +48,36 @@ public class TrainerServiceImplTest {
 
     @Test
     void shouldCreateTrainer() throws Exception {
-        TrainerResponseDTO trainerRequest = getTrainerRequest();
+        TrainerDTO trainerRequest = getTrainerRequest();
         String value = objectMapper.writeValueAsString(trainerRequest);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/trainer")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(value))
                 .andExpect(status().isCreated());
-        assertEquals(2, trainerRepository.findAll().size());
+        assertEquals(1, trainerRepository.findAll().size());
     }
 
-    private TrainerResponseDTO getTrainerRequest() {
-        return TrainerResponseDTO.builder()
-                .userName("AndreaBocelli")
-                .firstName("Andrea")
-                .lastName("Bocelli")
-                .isActive(true)
+    private TrainerDTO getTrainerRequest() {
+        return TrainerDTO.builder()
+                .userName("NewUser")
+                .firstName("UserName")
+                .lastName("UserLastName")
+                .status("active")
                 .build();
+    }
+
+    @Test
+    void testShouldSearchTrainerByUserName() {
+        String userName = "testUser";
+        Trainer trainer = new Trainer();
+        trainer.setUserName(userName);
+        when(trainerRepository.findByUserName(userName)).thenReturn(trainer);
+
+        TrainerDTO expectedDto = new TrainerDTO();
+        when(trainerMapper.toDto(trainer)).thenReturn(expectedDto);
+
+        TrainerDTO resultDto =  trainingService.searchTrainerByUserName(userName);
+        assertEquals(expectedDto, resultDto);
     }
 }

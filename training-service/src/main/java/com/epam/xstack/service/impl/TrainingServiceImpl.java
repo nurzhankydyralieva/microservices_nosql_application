@@ -30,7 +30,7 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainerMapper trainerMapper;
 
     @Override
-    public void addTrainer(TrainerDTO trainerDTO) {
+    public TrainerDTO addTrainer(TrainerDTO trainerDTO) {
         Trainer newTrainer = trainerMapper.toEntity(trainerDTO);
         Trainer userNameInDB = trainerRepository.findByUserName(newTrainer.getUserName());
 
@@ -50,6 +50,16 @@ public class TrainingServiceImpl implements TrainingService {
             trainerRepository.save(trainer);
         }
         log.info("New trainer created");
+        return TrainerDTO.builder()
+                .trainings(trainerDTO.getTrainings())
+                .months(trainerDTO.getMonths())
+                .years(trainerDTO.getYears())
+                .duration(trainerDTO.getDuration())
+                .firstName(trainerDTO.getFirstName())
+                .lastName(trainerDTO.getLastName())
+                .userName(trainerDTO.getUserName())
+                .status(trainerDTO.getStatus())
+                .build();
     }
 
     @Override

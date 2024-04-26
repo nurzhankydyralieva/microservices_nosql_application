@@ -21,7 +21,7 @@ import java.util.List;
 public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepository trainerRepository;
     private final WebClient.Builder webClientBuilder;
-    private static final String TRAINING_MICROSERVICE_URL = "http://localhost:8082/api/training";
+    private static final String TRAINING_MICROSERVICE_URL = "http://localhost:8083/api/training";
 
     @Override
     public TrainerResponseOkDTO createTrainer(TrainerRequestDTO dto) {
